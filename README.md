@@ -26,6 +26,8 @@ Workflow is roughly:
   the offline grade worksheet with grades and feedback
   extracted from the `graded/` directories.
 
+* Upload the offline grade worksheet to Moodle.
+
 Group project workflow:
 
 * Run `ungroup.py` if needed to reorganize everything for
