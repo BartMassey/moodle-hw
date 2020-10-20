@@ -24,6 +24,11 @@ ap.add_argument(
     default="groups.csv",
 )
 ap.add_argument(
+    "-e", "--egroups",
+    help="Generated enrolment group list for Moodle.",
+    default="egroups.csv",
+)
+ap.add_argument(
     "-G", "--groupings",
     help="Generated groupings list for Moodle.",
     default="groupings.csv",
@@ -36,6 +41,11 @@ ap.add_argument(
     "-c", "--course",
     help="Course shortname for group title.",
 )
+ap.add_argument(
+    "--unsubmitted",
+    help="Consider unsubmitted members in group project allocation.",
+    action="store_true",
+)
 args = ap.parse_args()
 if args.group_title is None:
     args.groups = None
@@ -44,15 +54,12 @@ if args.groups is not None and args.course is None:
     print("no course for groups file", file=sys.stderr)
     exit(1)
 
-def stripname(a):
-    return a.replace("'", "")
-
 wsf = open(args.worksheet, "r", encoding='utf-8-sig')
 ws = csv.reader(wsf)
 rawheaders = next(ws)
 headers = dict([(j, i) for i, j in enumerate(rawheaders)])
-entries = { stripname(row[headers["Full name"]]) : row for row in ws
-            if row[headers["Status"]].startswith("Submitted") }
+entries = { row[headers["Full name"]] : row for row in ws
+            if args.unsubmitted or row[headers["Status"]].startswith("Submitted") }
 
 grades = dict()
 alts = set()
@@ -67,7 +74,13 @@ for d in os.listdir(args.graded):
             authors = next(g).strip()
             scoretext = next(g).strip()
             if groupalt:
-                if scoretext != "":
+                if len(scoretext) > 0 and scoretext[0] == "?":
+                    print(
+                        f"warning: verify {authors} in {scoretext[1:]}",
+                        file=sys.stderr,
+                    )
+                    scoretext = "-"
+                if scoretext != "-":
                     excepted = True
             else:
                 score = int(scoretext)
@@ -80,7 +93,7 @@ for d in os.listdir(args.graded):
             )
             continue
         authors = authors.split(", ")
-        if scoretext != "":
+        if scoretext != "-":
             sep = next(g).strip()
             if sep != "":
                 print(
@@ -130,6 +143,20 @@ with open(args.annotated, "w") as gs:
 if args.groups is not None:
     course = args.course
 
+    with open(args.egroups, "w") as gr:
+        for g in groups:
+            print(f"# {g}", file=gr)
+            for a in groups[g]:
+                try:
+                    e = entries[a]
+                    email = e[headers["Email address"]]
+                    print(email, file=gr)
+                except:
+                    print(
+                        f"internal error group {g} author {a}",
+                        file=sys.stderr,
+                    )
+                    
     with open(args.groups, "w") as gr:
         out = csv.writer(gr)
         out.writerow([
@@ -142,11 +169,26 @@ if args.groups is not None:
         ])
         for g in groups:
             for a in groups[g]:
-                e = entries[a]
-                firstname, lastname = e[headers["Full name"]].split(' ')
-                email = e[headers["Email address"]]
-                username, _ = email.split('@')
-                out.writerow([username, firstname, lastname, email, course, g])
+                try:
+                    e = entries[a]
+                    names = e[headers["Full name"]].split(' ')
+                    firstname = ' '.join(names[:-1])
+                    lastname = names[-1]
+                    email = e[headers["Email address"]]
+                    username, _ = email.split('@')
+                    out.writerow([
+                        username,
+                        firstname,
+                        lastname,
+                        email,
+                        course,
+                        g,
+                    ])
+                except:
+                    print(
+                        f"internal error group {g} author {a}",
+                        file=sys.stderr,
+                    )
 
     with open(args.groupings, "w") as gr:
         out = csv.writer(gr)
