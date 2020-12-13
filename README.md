@@ -14,6 +14,9 @@ Workflow is roughly:
 * Download the zipball of student assignments and the
   offline grade worksheet
 
+* Make an `orig` directory and `unzip` the zipball of
+  student assignments into it.
+
 * Run `unpack.py` with appropriate options to create a
   `staged/` directory containing assignments to grade. Each
   top-level directory will have a `GRADING.txt` file that
