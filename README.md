@@ -14,16 +14,26 @@ Workflow is roughly:
 * Download the zipball of student assignments and the
   offline grade worksheet
 
-* Make an `orig` directory and `unzip` the zipball of
-  student assignments into it.
+* Grotty shell-ish way:
 
-* Run `unpack.py` with appropriate options to create a
-  `staged/` directory containing assignments to grade. Each
-  top-level directory will have a `GRADING.txt` file that
-  can be edited for feedback and score.
+    * Make an `orig` directory and `unzip` the zipball of
+      student assignments into it.
+
+    * Run `unpack.py` with appropriate options to create a
+      `staged/` directory containing assignments to grade. Each
+      top-level directory will have a `GRADING.txt` file that
+      can be edited for feedback and score.
+
+* For grading Rust homework (looks for a `Cargo.toml` file):
+
+    * Run `unpack-rust-hw.py` with the assignment name and
+      zipfile name as arguments.
+
+    * Make an empty `graded/` directory.
 
 * Grade the projects one at a time, moving them from
-  `staged/` to `graded/` as they are completed.
+  `staged/` to `graded/` as they are completed. Edit
+  each `GRADING.txt` as appropriate.
 
 * Run `mergegrades.py` with appropriate options to fill in
   the offline grade worksheet with grades and feedback
@@ -42,9 +52,8 @@ Group project workflow:
 
 Github project workflow:
 
-* This software can be used in the situation
-  in which work is submitted to the Moodle as Github
-  URLs. `geturls.py`
+* This software can be used in the situation in which work
+  is submitted to the Moodle as Github URLs. `geturls.py`
   will extract the necessary Github URLs from Moodle
   submissions and set up the grading structure. `clone.py`
   can be used to clone the actual repos from the URLs.
