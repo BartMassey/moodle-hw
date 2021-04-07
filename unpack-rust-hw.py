@@ -67,10 +67,12 @@ for student in sorted(submissions.iterdir()):
 
     gdir = ungraded / Path(cname)
     gdir.mkdir()
-    subprocess.run(
+    result = subprocess.run(
         ["unzip", "-d", gdir, "-x", hwzip],
         stdout=subprocess.DEVNULL,
     )
+    if result.returncode != 0:
+        continue
     if not (gdir / Path("Cargo.toml")).is_file():
         if not pull_up(gdir):
             continue
