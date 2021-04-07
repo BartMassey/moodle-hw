@@ -2,11 +2,11 @@
 # Unpack Moodle Rust homework submissions for grading.
 # Bart Massey 2021
 
-submissions = Path("orig")
-ungraded = Path("staged")
-
 import os, pathlib, shutil, subprocess, sys
 from pathlib import Path
+
+submissions = Path("orig")
+ungraded = Path("staged")
 
 assert len(sys.argv) == 3
 assignment = sys.argv[1]
@@ -32,7 +32,10 @@ def pull_up(gpath):
     for obj in actual.iterdir():
         obj.rename(gpath / obj.name)
     killme = Path('.').joinpath(*actual.parts[:3])
-    # print("rm -r", killme)
+    for root, dirs, files in os.walk(killme):
+        if len(files) > 0:
+            print(f"{gpath}: warning: files remaining", file=sys.stderr)
+            return True
     shutil.rmtree(killme)
     return True
 
