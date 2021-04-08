@@ -41,8 +41,6 @@ def pull_up(gpath):
 
 shutil.rmtree(submissions, ignore_errors=True)
 submissions.mkdir()
-# XXX Remove this next line!
-shutil.rmtree(ungraded, ignore_errors=True)
 ungraded.mkdir()
 
 subprocess.run(
@@ -73,9 +71,19 @@ for student in sorted(submissions.iterdir()):
     )
     if result.returncode != 0:
         continue
+
     if not (gdir / Path("Cargo.toml")).is_file():
         if not pull_up(gdir):
             continue
+
+    main_file_path = Path("main.rs")
+    main_path = gdir / main_file_path
+    if main_path.is_file():
+        print(f'"correcting" {cname}: top-level main.rs')
+        src_path = gdir / Path("src")
+        if not src_path.is_dir():
+            src_path.mkdir()
+        main_path.rename(gdir / Path("src") / main_file_path)
         
     with open(gdir / "GRADING.txt", "w") as g:
         print(f"{assignment}\n{name}\n?\n", file=g)
