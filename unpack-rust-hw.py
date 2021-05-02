@@ -2,7 +2,7 @@
 # Unpack Moodle Rust homework submissions for grading.
 # Bart Massey 2021
 
-import os, pathlib, shutil, subprocess, sys
+import os, pathlib, shutil, sys, zipfile
 from pathlib import Path
 
 submissions = Path("orig")
@@ -10,7 +10,7 @@ ungraded = Path("staged")
 
 assert len(sys.argv) == 3
 assignment = sys.argv[1]
-zipfile = sys.argv[2]
+ziporig = sys.argv[2]
 
 def canon_name(name):
     return '-'.join(name.lower().split())
@@ -43,10 +43,9 @@ shutil.rmtree(submissions, ignore_errors=True)
 submissions.mkdir()
 ungraded.mkdir()
 
-subprocess.run(
-    ["unzip", "-d", submissions, "-x", zipfile],
-    stdout=subprocess.DEVNULL,
-)
+with zipfile.ZipFile(ziporig) as zips:
+    zips.extractall(path=submissions)
+
 for student in sorted(submissions.iterdir()):
     ss = str(student.name)
     endname = ss.index('_')
@@ -65,12 +64,9 @@ for student in sorted(submissions.iterdir()):
 
     gdir = ungraded / Path(cname)
     gdir.mkdir()
-    result = subprocess.run(
-        ["unzip", "-d", gdir, "-x", hwzip],
-        stdout=subprocess.DEVNULL,
-    )
-    if result.returncode != 0:
-        continue
+
+    with zipfile.ZipFile(hwzip) as zips:
+        zips.extractall(path=gdir)
 
     if not (gdir / Path("Cargo.toml")).is_file():
         if not pull_up(gdir):
