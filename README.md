@@ -52,11 +52,19 @@ projects.
 
 ## Github project workflow
 
-* This software can be used in the situation in which work
-  is submitted to the Moodle as Github URLs. `geturls.py`
-  will extract the necessary Github URLs from Moodle
-  submissions and set up the grading structure. `clone.py`
-  can be used to clone the actual repos from the URLs.
+This software can be used in the situation in which work
+is submitted to the Moodle as Github URLs.
+
+* `geturls.py` will directly extract the necessary Github
+  URLs from Moodle submissions and set up the grading
+  structure.
+
+* `clone.py` can be used to clone the actual repos from the
+  URLs in the case where projects and their URLs are being
+  drawn from previous submissions.
+
+* `clone-final.py` works directly from the CSV file produced
+  by `geturls.py` to clone projects.
 
 ## Course / project enrolment workflow
 
