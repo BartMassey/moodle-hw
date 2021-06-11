@@ -1,16 +1,19 @@
 #!/usr/bin/python3
 
-import os, re, sys
+import csv, os, re, sys
 
 url_re = re.compile(
     "https?://git[-_/.a-zA-Z0-9]+"
 )
 
-for d in os.listdir("."):
-    gr = os.path.join(d, "GRADING.txt")
+w = csv.writer(sys.stdout)
+w.writerow(["ctitle", "title", "url"])
+base = "staged"
+for d in os.listdir(base):
+    gr = os.path.join(base, d, "GRADING.txt")
     with open(gr, "r") as grf:
         name = next(grf).strip()
-    asg = os.path.join(d, "assignment.html")
+    asg = os.path.join(base, d, "assignment.html")
     with open(asg, "r") as asgf:
         url = None
         for line in asgf:
@@ -18,4 +21,4 @@ for d in os.listdir("."):
             if match != None:
                 url = match.group()
                 break
-    print(f"{name},{url}")
+    w.writerow([d, name, url])

@@ -38,7 +38,8 @@ if not os.path.isdir("orig"):
     print("no orig", file=sys.stderr)
     exit(1)
 
-if os.path.isdir("staged"):
+base = "staged"
+if os.path.isdir(base):
     print("staged exists", file=sys.stderr)
     exit(1)
 
@@ -56,37 +57,42 @@ for d in os.listdir("orig"):
     contents = list(os.listdir(sd))
     if len(contents) == 0:
         continue
+    sfs = [os.path.join(sd, c) for c in contents]
     if len(contents) > 1:
-        print(f"{sd}: multiple files", file=sys.stderr)
-        continue
-    sf = os.path.join(sd, contents[0])
+        print(f"{sd}: warning: multiple files", file=sys.stderr)
 
     desc = front_re.sub("", d)
     if args.project:
-        title, author = desc.split('-')
+        last_space = desc.rindex(' ')
+        prefix = desc[:last_space]
+        last_dash = prefix.rindex('-')
+        title = desc[:last_dash]
+        author = desc[last_dash + 1:]
         target = canon(title)
         authors[target].append(author)
     else:
         title = args.title
         author = desc
         target = canon(author)
-    dd = os.path.join("staged", target)
+    dd = os.path.join(base, target)
 
-    transfers[target] = (sf, dd, title, author)
+    transfers[target] = (sfs, dd, title, author)
 
-os.mkdir("staged")
+os.mkdir(base)
 for target in transfers:
-    sf, dd, title, author = transfers[target]
+    sfs, dd, title, author = transfers[target]
     if args.project:
         author = ", ".join(authors[target])
 
     os.mkdir(dd)
-    if args.pdf:
-        subprocess.run(["cp", sf, f"{dd}/assignment.pdf"])
+    if len(sfs) > 1:
+        subprocess.run(["cp", *sfs, f"{dd}/"])
+    elif args.pdf:
+        subprocess.run(["cp", sfs[0], f"{dd}/assignment.pdf"])
     elif args.html:
-        subprocess.run(["cp", sf, f"{dd}/assignment.html"])
+        subprocess.run(["cp", sfs[0], f"{dd}/assignment.html"])
     else:
-        subprocess.run(["unzip", "-x", "-q", f"../../{sf}"], cwd=dd)
+        subprocess.run(["unzip", "-x", "-q", f"../../{sfs[0]}"], cwd=dd)
 
     grf = os.path.join(dd, "GRADING.txt")
     with open(grf, "w") as gr:

@@ -6,12 +6,10 @@ ap = argparse.ArgumentParser()
 ap.add_argument(
     "-u", "--url-file",
     help="repo urls file",
-    default="../progress-review/urls.csv",
 )
 ap.add_argument(
     "-p", "--projects-file",
     help="projects info file",
-    default="../proposal/groups.csv",
 )
 ap.add_argument(
     "-d", "--dry-run",
