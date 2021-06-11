@@ -6,7 +6,7 @@ poorly-documented toolsuite for managing bulk remote Moodle
 class grading of assigments including group assignments and
 projects.
 
-Workflow is roughly:
+## Basic workflow
 
 * Set up the remote work on Moodle with the `offline grade
   worksheet` option.
@@ -41,7 +41,7 @@ Workflow is roughly:
 
 * Upload the offline grade worksheet to Moodle.
 
-Group project workflow:
+## Group project workflow
 
 * Run `ungroup.py` if needed to reorganize everything for
   group grading.
@@ -50,10 +50,16 @@ Group project workflow:
   uploading to the Moodle, starting with `groups.csv` which
   contains *[something I can't remember]*
 
-Github project workflow:
+## Github project workflow
 
 * This software can be used in the situation in which work
   is submitted to the Moodle as Github URLs. `geturls.py`
   will extract the necessary Github URLs from Moodle
   submissions and set up the grading structure. `clone.py`
   can be used to clone the actual repos from the URLs.
+
+## Course / project enrolment workflow
+
+`bulkenrol.py`, `bulkreg.py`, `groupnames.py`,
+`groupmembers.py` are tools for dealing with course and
+project setup.
