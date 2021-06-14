@@ -66,6 +66,9 @@ is submitted to the Moodle as Github URLs.
 * `clone-final.py` works directly from the CSV file produced
   by `geturls.py` to clone projects.
 
+* `mergegrades.py` can just be used directly as normal on
+  the graded output.
+
 ## Course / project enrolment workflow
 
 `bulkenrol.py`, `bulkreg.py`, `groupnames.py`,
